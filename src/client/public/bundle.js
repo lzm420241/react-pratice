@@ -61,59 +61,172 @@
 		displayName: 'helloReact',
 		getInitialState: function getInitialState() {
 			return {
-				messageA: 'I am from default state'
+				firstName: '',
+				lastName: ''
 			};
-		},
-	
-		updateMessage: function updateMessage(e) {
-			this.setState({ messageA: e.target.value });
 		},
 		getDefaultProps: function getDefaultProps() {
 			return {
-				message: 'I am from default',
-				number: 24
+				defaultProps: "default props"
 			};
 		},
+		componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+			this._logPropsAndState('component will receive props');
+			console.log('nextProps.likes: ' + nextProps.defaultProps);
+			this.setState({
+				firstName: nextProps.defaultProps > this.props.defaultProps
+			});
+		},
+		shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+			this._logPropsAndState('should component update');
+			console.log('nextProps.defaultProps', nextProps.defaultProps, 'nextState.firstName: ', nextState.firstName);
+			// this.state.firstName = nextState.firstName;
+			return nextProps.defaultProps > 1;
+		},
+		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+			this._logPropsAndState('componentDidUpdate');
+			console.log('prevProps.defaultProps', prevProps.defaultProps, 'prevState.firstName', prevState.firstName);
+			console.log('componentDidUpdate() give an opportunity to execute code after react is finished updating the DOM.');
+		},
+		_logPropsAndState: function _logPropsAndState(callingFunction) {
+			console.log('=> ' + callingFunction);
+			console.log('this.props.defaultProps: ' + this.props.defaultProps);
+			console.log('this.state.firstName: ' + this.state.firstName);
+		},
 	
-		propTypes: {
-			message: _react2.default.PropTypes.string,
-			number: _react2.default.PropTypes.number
+		update: function update() {
+			this.setState({
+				firstName: this.refs.firstName.refs.messageTextBox.value,
+				lastName: this.refs.lastName.refs.messageTextBox.value
+			});
+		},
+		componentDidMount: function componentDidMount() {
+			console.log("hello react component did mount");
+		},
+	
+		reload: function reload() {
+			// ReactDOM.unmountComponentAtNode(document.getElementById('app'));
+			try {
+				_react2.default.unmountComponentAtNode(document.getElementById('app'));
+			} catch (e) {
+				console.error(e);
+			}
+			(0, _reactDom.render)(_react2.default.createElement(helloReact), document.getElementById('app'));
 		},
 		render: function render() {
+			this._logPropsAndState("render()");
 			return _react2.default.createElement(
 				'div',
 				null,
-				_react2.default.createElement('input', { type: 'text', onChange: this.updateMessage }),
 				_react2.default.createElement(
-					'h1',
+					'p',
 					null,
-					this.state.messageA
+					this.props.defaultProps
 				),
+				_react2.default.createElement(HelloMessage, {
+					message: 'Hello ' + this.state.firstName + ' ' + this.state.lastName }),
+				_react2.default.createElement(TextBox, { label: 'First Name', ref: 'firstName', update: this.update }),
+				_react2.default.createElement(TextBox, { label: 'Last Name', ref: 'lastName', update: this.update }),
 				_react2.default.createElement(
-					'h1',
-					null,
-					'Hello, React!'
-				),
-				_react2.default.createElement(
-					'h2',
-					null,
-					this.props.message
-				),
-				_react2.default.createElement(
-					'h3',
-					{ className: 'lzm' },
-					this.props.number
-				),
-				_react2.default.createElement(
-					'h3',
-					null,
-					this.props.name
+					'button',
+					{ onClick: this.reload },
+					'Reload'
 				)
 			);
 		}
 	});
 	
-	(0, _reactDom.render)(_react2.default.createElement(helloReact, { name: 'hello,world' }), document.getElementById('app'));
+	var HelloMessage = _react2.default.createClass({
+		displayName: 'HelloMessage',
+		componentWillMount: function componentWillMount() {
+			console.log('component will mount');
+		},
+		componentDidMount: function componentDidMount() {
+			console.log('component did mount');
+		},
+		componentWillUnmount: function componentWillUnmount() {
+			console.log('component will unmount');
+		},
+	
+		render: function render() {
+			return _react2.default.createElement(
+				'h2',
+				null,
+				this.props.message
+			);
+		}
+	});
+	
+	var Button = _react2.default.createClass({
+		displayName: 'Button',
+	
+		render: function render() {
+			return _react2.default.createElement(
+				'button',
+				{ onClick: this.props.onClick },
+				this.props.children
+			);
+		}
+	});
+	
+	var GlyphIcon = _react2.default.createClass({
+		displayName: 'GlyphIcon',
+	
+		render: function render() {
+			return _react2.default.createElement('span', { className: 'glyphicon glyphicon-' + this.props.icon });
+		}
+	});
+	
+	var TextBox = _react2.default.createClass({
+		displayName: 'TextBox',
+		getInitialState: function getInitialState() {
+			return {
+				isEditing: false,
+				text: this.props.label
+			};
+		},
+	
+		// componentDidMount() {
+		//     this.setState({
+		//     	text: this.refs.messageTextBox.findDOMNode().value
+		//     });
+		// },
+		update: function update() {
+			this.setState({
+				text: this.refs.messageTextBox.value,
+				isEditing: false
+			});
+			this.props.update();
+		},
+		edit: function edit() {
+			this.setState({
+				isEditing: true
+			});
+		},
+		render: function render() {
+			return _react2.default.createElement(
+				'div',
+				null,
+				this.props.label,
+				_react2.default.createElement('br', null),
+				_react2.default.createElement('input', { type: 'text', ref: 'messageTextBox', disabled: !this.state.isEditing }),
+				this.state.isEditing ? _react2.default.createElement(
+					'button',
+					{ onClick: this.update },
+					_react2.default.createElement(GlyphIcon, { icon: 'ok' }),
+					'Update'
+				) : _react2.default.createElement(
+					'button',
+					{ onClick: this.edit },
+					_react2.default.createElement(GlyphIcon, { icon: 'pencil' }),
+					'Edit'
+				)
+			);
+		}
+	});
+	
+	(0, _reactDom.render)(_react2.default.createElement(helloReact), document.getElementById('app'));
+	// render(React.createElement(helloReact, { name: 'hello,world' }), document.getElementById('app'));
 	// render(new helloReact({ name: 'this is a props name' }), document.getElementById('app'));
 
 /***/ },
