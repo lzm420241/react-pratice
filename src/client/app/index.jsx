@@ -1,5 +1,8 @@
 import React from 'react';
-import {render, findDOMNode, ReactDOM} from 'react-dom';
+import {render, findDOMNode, ReactDOM, unmountComponentAtNode} from 'react-dom';
+
+// var React = require("react");
+// var ReactDOM = require("react-dom");
 
 var helloReact = React.createClass({
 	getInitialState() {
@@ -29,7 +32,11 @@ var helloReact = React.createClass({
 	    	nextState.firstName
 	    );
 	    // this.state.firstName = nextState.firstName;
-	    return nextProps.defaultProps > 1;  
+	    // return nextProps.defaultProps > 1;  
+	    return true;
+	},
+	componentDidMount() {
+	    console.log('hello react component did mount');  
 	},
 	componentDidUpdate(prevProps, prevState) {
 	    this._logPropsAndState('componentDidUpdate');
@@ -58,11 +65,16 @@ var helloReact = React.createClass({
 	reload: function(){
 		// ReactDOM.unmountComponentAtNode(document.getElementById('app'));
 		try{
-			React.unmountComponentAtNode(document.getElementById('app'));
+			unmountComponentAtNode(document.getElementById('app'));
+			// React.unmountAndReleaseReactRootNode(document.getElementById('app'));
 		}catch(e){	
+			// console.log("React: " + unmountComponentAtNode());
 			console.error(e);
 		}
-		render(React.createElement(helloReact), document.getElementById('app'));
+		setTimeout(()=> {
+			render(React.createElement(helloReact), document.getElementById('app'));
+		},3000);
+		
 	},
 	render: function(){
 		this._logPropsAndState("render()");
@@ -87,7 +99,7 @@ var HelloMessage = React.createClass({
 	    console.log('component will mount');  
 	},
 	componentDidMount() {
-	    console.log('component did mount');  
+	    console.log('hello message component did mount');  
 	},
 	componentWillUnmount() {
 	    console.log('component will unmount');  
@@ -123,11 +135,11 @@ var TextBox = React.createClass({
 	        text: this.props.label  
 	    };
 	},
-	// componentDidMount() {
-	//     this.setState({
-	//     	text: this.refs.messageTextBox.findDOMNode().value
-	//     });
-	// },
+	componentDidMount() {
+	    this.setState({
+	    	text: this.refs.messageTextBox.value
+	    });
+	},
 	update: function(){	
 		this.setState({
 			text: this.refs.messageTextBox.value,
@@ -152,6 +164,19 @@ var TextBox = React.createClass({
 						<button onClick={this.edit}><GlyphIcon icon='pencil'/>Edit</button>
 				}
 			</div>
+		);
+	}
+});
+
+var UserRow = React.createClass({
+	render: function(){
+		return (
+			<tr>
+				<td>{ this.props.user.userName }</td>
+				<td>
+					<a href={'mailto: ' + this.props.user.email}> { this.props.user.email } </a>
+				</td>
+			</tr>
 		);
 	}
 });

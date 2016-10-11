@@ -49,6 +49,8 @@
 
 	'use strict';
 	
+	var _React$createClass;
+	
 	var _react = __webpack_require__(/*! react */ 1);
 	
 	var _react2 = _interopRequireDefault(_react);
@@ -57,7 +59,12 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var helloReact = _react2.default.createClass({
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
+	// var React = require("react");
+	// var ReactDOM = require("react-dom");
+	
+	var helloReact = _react2.default.createClass((_React$createClass = {
 		displayName: 'helloReact',
 		getInitialState: function getInitialState() {
 			return {
@@ -81,7 +88,11 @@
 			this._logPropsAndState('should component update');
 			console.log('nextProps.defaultProps', nextProps.defaultProps, 'nextState.firstName: ', nextState.firstName);
 			// this.state.firstName = nextState.firstName;
-			return nextProps.defaultProps > 1;
+			// return nextProps.defaultProps > 1;  
+			return true;
+		},
+		componentDidMount: function componentDidMount() {
+			console.log('hello react component did mount');
 		},
 		componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
 			this._logPropsAndState('componentDidUpdate');
@@ -99,42 +110,42 @@
 				firstName: this.refs.firstName.refs.messageTextBox.value,
 				lastName: this.refs.lastName.refs.messageTextBox.value
 			});
-		},
-		componentDidMount: function componentDidMount() {
-			console.log("hello react component did mount");
-		},
-	
-		reload: function reload() {
-			// ReactDOM.unmountComponentAtNode(document.getElementById('app'));
-			try {
-				_react2.default.unmountComponentAtNode(document.getElementById('app'));
-			} catch (e) {
-				console.error(e);
-			}
-			(0, _reactDom.render)(_react2.default.createElement(helloReact), document.getElementById('app'));
-		},
-		render: function render() {
-			this._logPropsAndState("render()");
-			return _react2.default.createElement(
-				'div',
-				null,
-				_react2.default.createElement(
-					'p',
-					null,
-					this.props.defaultProps
-				),
-				_react2.default.createElement(HelloMessage, {
-					message: 'Hello ' + this.state.firstName + ' ' + this.state.lastName }),
-				_react2.default.createElement(TextBox, { label: 'First Name', ref: 'firstName', update: this.update }),
-				_react2.default.createElement(TextBox, { label: 'Last Name', ref: 'lastName', update: this.update }),
-				_react2.default.createElement(
-					'button',
-					{ onClick: this.reload },
-					'Reload'
-				)
-			);
 		}
-	});
+	}, _defineProperty(_React$createClass, 'componentDidMount', function componentDidMount() {
+		console.log("hello react component did mount");
+	}), _defineProperty(_React$createClass, 'reload', function reload() {
+		// ReactDOM.unmountComponentAtNode(document.getElementById('app'));
+		try {
+			(0, _reactDom.unmountComponentAtNode)(document.getElementById('app'));
+			// React.unmountAndReleaseReactRootNode(document.getElementById('app'));
+		} catch (e) {
+			// console.log("React: " + unmountComponentAtNode());
+			console.error(e);
+		}
+		setTimeout(function () {
+			(0, _reactDom.render)(_react2.default.createElement(helloReact), document.getElementById('app'));
+		}, 3000);
+	}), _defineProperty(_React$createClass, 'render', function render() {
+		this._logPropsAndState("render()");
+		return _react2.default.createElement(
+			'div',
+			null,
+			_react2.default.createElement(
+				'p',
+				null,
+				this.props.defaultProps
+			),
+			_react2.default.createElement(HelloMessage, {
+				message: 'Hello ' + this.state.firstName + ' ' + this.state.lastName }),
+			_react2.default.createElement(TextBox, { label: 'First Name', ref: 'firstName', update: this.update }),
+			_react2.default.createElement(TextBox, { label: 'Last Name', ref: 'lastName', update: this.update }),
+			_react2.default.createElement(
+				'button',
+				{ onClick: this.reload },
+				'Reload'
+			)
+		);
+	}), _React$createClass));
 	
 	var HelloMessage = _react2.default.createClass({
 		displayName: 'HelloMessage',
@@ -142,7 +153,7 @@
 			console.log('component will mount');
 		},
 		componentDidMount: function componentDidMount() {
-			console.log('component did mount');
+			console.log('hello message component did mount');
 		},
 		componentWillUnmount: function componentWillUnmount() {
 			console.log('component will unmount');
@@ -185,12 +196,12 @@
 				text: this.props.label
 			};
 		},
+		componentDidMount: function componentDidMount() {
+			this.setState({
+				text: this.refs.messageTextBox.value
+			});
+		},
 	
-		// componentDidMount() {
-		//     this.setState({
-		//     	text: this.refs.messageTextBox.findDOMNode().value
-		//     });
-		// },
 		update: function update() {
 			this.setState({
 				text: this.refs.messageTextBox.value,
@@ -220,6 +231,33 @@
 					{ onClick: this.edit },
 					_react2.default.createElement(GlyphIcon, { icon: 'pencil' }),
 					'Edit'
+				)
+			);
+		}
+	});
+	
+	var UserRow = _react2.default.createClass({
+		displayName: 'UserRow',
+	
+		render: function render() {
+			return _react2.default.createElement(
+				'tr',
+				null,
+				_react2.default.createElement(
+					'td',
+					null,
+					this.props.user.userName
+				),
+				_react2.default.createElement(
+					'td',
+					null,
+					_react2.default.createElement(
+						'a',
+						{ href: 'mailto: ' + this.props.user.email },
+						' ',
+						this.props.user.email,
+						' '
+					)
 				)
 			);
 		}
