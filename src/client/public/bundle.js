@@ -143,14 +143,33 @@
 				'button',
 				{ onClick: this.reload },
 				'Reload'
-			)
+			),
+			_react2.default.createElement(UserList, null),
+			_react2.default.createElement(ExampleForm, null)
 		);
 	}), _React$createClass));
 	
+	var ReactMixin1 = {
+		log: function log(message) {
+			console.log(message);
+		},
+		componentWillMount: function componentWillMount() {
+			this.log('component will mount from ReactMixin1');
+		}
+	};
+	
+	var ReactMixin2 = {
+		componentWillMount: function componentWillMount() {
+			console.log("component will mount from ReactMixin2");
+		}
+	};
+	
 	var HelloMessage = _react2.default.createClass({
 		displayName: 'HelloMessage',
+	
+		mixins: [ReactMixin1, ReactMixin2],
 		componentWillMount: function componentWillMount() {
-			console.log('component will mount');
+			console.log('component will mount from HelloMessage');
 		},
 		componentDidMount: function componentDidMount() {
 			console.log('hello message component did mount');
@@ -170,6 +189,14 @@
 	
 	var Button = _react2.default.createClass({
 		displayName: 'Button',
+	
+		mixins: [ReactMixin1, ReactMixin2],
+		clicked: function clicked() {
+			this.log(this.props.text + 'clicked');
+		},
+		componentWillMount: function componentWillMount() {
+			this.log("component will mount from Button");
+		},
 	
 		render: function render() {
 			return _react2.default.createElement(
@@ -259,6 +286,79 @@
 						' '
 					)
 				)
+			);
+		}
+	});
+	
+	var UserList = _react2.default.createClass({
+		displayName: 'UserList',
+		getInitialState: function getInitialState() {
+			return {
+				users: [{
+					id: 1,
+					userName: 'lzm',
+					email: 'lzm420241@gmail.com'
+				}, {
+					id: 2,
+					userName: 'AdamHorton',
+					email: 'digitalicarus@gmail.com'
+				}]
+			};
+		},
+	
+		render: function render() {
+			var users = this.state.users.map(function (user) {
+				//key prevents react warning
+				return _react2.default.createElement(UserRow, { user: user, key: user.id });
+			});
+			return _react2.default.createElement(
+				'table',
+				null,
+				_react2.default.createElement(
+					'tbody',
+					null,
+					_react2.default.createElement(
+						'tr',
+						null,
+						_react2.default.createElement(
+							'th',
+							null,
+							'User Name'
+						),
+						_react2.default.createElement(
+							'th',
+							null,
+							'Email Address'
+						)
+					),
+					users
+				)
+			);
+		}
+	});
+	
+	var ExampleForm = _react2.default.createClass({
+		displayName: 'ExampleForm',
+		getInitialState: function getInitialState() {
+			return {
+				message: 'Read and Write'
+			};
+		},
+		getDefaultProps: function getDefaultProps() {
+			return {
+				message: 'Read Only'
+			};
+		},
+	
+		onChange: function onChange(event) {
+			this.setState({ message: event.target.value });
+		},
+		render: function render() {
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement('input', { id: 'readOnly', className: 'form-control', type: 'text', value: this.props.message }),
+				_react2.default.createElement('input', { id: 'readAndWrite', className: 'form-control', value: this.state.message, onChange: this.onChange })
 			);
 		}
 	});

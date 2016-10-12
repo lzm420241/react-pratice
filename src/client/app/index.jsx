@@ -89,14 +89,32 @@ var helloReact = React.createClass({
 					<TextBox label="Last Name" ref='lastName' update={this.update}>
 					</TextBox>
 					<button onClick={this.reload}>Reload</button>
+					<UserList/>
+					<ExampleForm/>
 				</div>
 			);
 	}
 });
 
-var HelloMessage = React.createClass({
+var ReactMixin1 = {
+	log: function(message){
+		console.log(message);
+	},
 	componentWillMount() {
-	    console.log('component will mount');  
+	    this.log('component will mount from ReactMixin1');  
+	}
+};
+
+var ReactMixin2 = {
+	componentWillMount() {
+	    console.log("component will mount from ReactMixin2");  
+	}
+};
+
+var HelloMessage = React.createClass({
+	mixins: [ReactMixin1, ReactMixin2],
+	componentWillMount() {
+	    console.log('component will mount from HelloMessage');  
 	},
 	componentDidMount() {
 	    console.log('hello message component did mount');  
@@ -110,9 +128,16 @@ var HelloMessage = React.createClass({
 });
 
 var Button = React.createClass({
+	mixins: [ReactMixin1, ReactMixin2],
+	clicked: function(){
+		this.log(this.props.text + 'clicked');
+	},
+	componentWillMount() {
+	    this.log("component will mount from Button");  
+	},
 	render: function(){
 		return (
-			<button onClick={this.props.onClick}>
+			<button onClick={this.props.onClick} >
 			{this.props.children}
 			</button>
 		);
@@ -177,6 +202,70 @@ var UserRow = React.createClass({
 					<a href={'mailto: ' + this.props.user.email}> { this.props.user.email } </a>
 				</td>
 			</tr>
+		);
+	}
+});
+
+var UserList = React.createClass({
+	getInitialState() {
+	    return {
+	        users: [
+	        	{
+	        		id: 1,
+	        		userName: 'lzm',
+	        		email: 'lzm420241@gmail.com'
+	        	},
+	        	{
+	        		id: 2,
+	        		userName: 'AdamHorton',
+	        		email: 'digitalicarus@gmail.com'
+	        	}
+	        ]  
+	    };
+	},
+	render: function(){
+		var users = this.state.users.map(
+				function(user){
+					//key prevents react warning
+					return (
+						<UserRow user={user} key={user.id}/>
+					);
+				}
+			);
+		return (
+			<table>
+			  <tbody>
+				<tr>
+					<th>User Name</th>
+					<th>Email Address</th>
+				</tr>
+				{users}
+			  </tbody>	
+			</table>
+		);
+	}
+});
+
+var ExampleForm = React.createClass({
+	getInitialState() {
+	    return {
+	        message: 'Read and Write'  
+	    };
+	},
+	getDefaultProps() {
+	    return {
+	        message: 'Read Only'  
+	    };
+	},
+	onChange: function(event){
+		this.setState({message: event.target.value});
+	},
+	render: function(){
+		return (
+		  <div>	
+			<input id='readOnly' className="form-control" type="text" value={this.props.message} />
+			<input id="readAndWrite" className="form-control" value={this.state.message} onChange={this.onChange} />
+		  </div>	
 		);
 	}
 });
